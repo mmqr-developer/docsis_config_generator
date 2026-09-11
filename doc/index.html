@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>docsis Documentation</title>
+</head>
+<body>
+<h1>General Information</h1>
+<p>General questions about this software can be sent to <a href=
+"mailto:docsis-users@lists.sourceforge.net">docsis-users@lists.sourceforge.net</a>.</p>
+<p>Visit <a href=
+"http://docsis.sourceforge.net">http://docsis.sourceforge.net</a> for
+the latest news on this program.</p>
+<h2>Legal</h2>
+<p>Copyright (c) 1999,2000,2001,2002 Cornel Ciocirlan<br />
+Copyright (c) 2002,2003 Evvolve Media SRL</p>
+<p>This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</p>
+<p>DOCSIS is a registered trademark of <a href=
+"http://www.cablelabs.com">CableLabs</a>.</p>
+<p>Portions of this program are derived from the RSA Data Security,
+Inc. MD5 Message-Digest Algorithm.</p>
+<h1>Description</h1>
+<p>This program encodes text configuration files which contain
+Configuration File Settings into binary configuration files, as
+specified by the DOCSIS RFI 1.1 Specification, Appendix C.</p>
+<p>It supports most DOCSIS 1.1 Configuration Settings. Not supported
+(currently):</p>
+<ul>
+<li>Telephony Settings</li>
+<li>Modem Capabilities</li>
+<li>TFTP server timestamp</li>
+<li>TFTP server provisioned modem address</li>
+<li>SNMPv3 settings (partial support provided)</li>
+</ul>
+<p>See DOCSIS 2.0 Radio Frequency Interface Specification, Appendix C
+for a description of these settings.</p>
+<h2>Limitations</h2>
+<p>More than one (up to 16) ClassOfService statements can appear in the
+configuration file. Only one BaselinePrivacy (BPI) statement can
+appear. The program does not check for the number of ClassOfService
+statements that appear, you have to make sure not to include more than
+16 or unexpected results will occur (modems /CMTSes may reset).</p>
+<p>DOCSIS BPI Specification clearly states that the BPI settings MUST
+NOT be present if Privacy is not enabled in [at least one of] the
+ClassOfService parameters (for example if PrivacyEnable is 0 for all
+classes of service, BPI statement should not appear).</p>
+<p>The program is not yet as "intelligent" as to detect these problems
+automatically.</p>
+<h1>Usage</h1>
+<p>There are three modes of operation:</p>
+<h2>Encoding CM configuration files</h2>
+<p>To encode a CM configuration file, run:<br />
+<code>$ gen_docsis -e cm_config_file.cfg my_key_file
+cm_config_file.bin</code></p>
+<p>The format of the text configuration file is described <a href=
+"config-format.html">here</a>. As sometimes an example is more useful
+than a truckload of documentation, we've included a few configuration
+files (see examples/*.cfg).</p>
+<p>In this mode of operation (triggered by the "-e" switch), the
+program will need a keyfile; this is the so-called "shared secret" or
+"authentication string". The program uses the string in the keyfile to
+calculate the CMTS MIC. This string has to be configured on the CMTS as
+well, otherwise the cable modem will not be able to register.</p>
+<p>An example key is provided in file examples/keyfile. The key is only
+a string of characters. Any trailing newline (\n) or carriage return
+(\r) characters are chopped to avoid confusion.</p>
+<h2>Encoding PacketCable MTA configuration files</h2>
+<p>To encode a CM configuration file, run:<br />
+<code>$ gen_docsis -p mta_config_file.cfg mta_config_file.bin</code></p>
+<p>PacketCable MTA config files MUST start with the "MtaConfigDelimiter
+1" configuration setting and MUST end with "MtaConfigDelimiter 255".
+All other configuration settings must be either SnmpMibObject or
+VendorSpecific. The program does not enforce this policy so you must
+make sure you abide by it or the MTA will reject the file.</p>
+<h2>Decoding CM or MTA binary configuration files</h2>
+<p>To decode a binary file, run:<br />
+<code>$ gen_docsis -d my_binary_file.bin</code></p>
+<h1>Adding new configuration settings</h1>
+<p>To add new configuration settings, in most cases the only thing you
+need to do is add them to the docsis_symtable.h (make sure you select
+the correct type-functions for encoding and decoding).</p>
+<p>Because of the way the encoder works, the symbol_name must determine
+all other values in the table with the exception of id and parent. Thus
+if two symbols share the same name they must also share the same
+docsis_code, type-functions, limits etc. Only the id and parent can be
+different.</p>
+</body>
+</html>

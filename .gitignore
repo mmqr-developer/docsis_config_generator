@@ -1,0 +1,5 @@
+# Rust build output.
+/target/
+
+# Scratch output from running the decoder by hand.
+dialplan_output.txt

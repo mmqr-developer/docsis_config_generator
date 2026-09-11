@@ -1,0 +1,27 @@
+[package]
+name = "docsis"
+version = "0.9.9"
+edition = "2021"
+rust-version = "1.80"
+description = "DOCSIS cable modem and PacketCable MTA configuration file encoder/decoder"
+license = "GPL-2.0-or-later"
+
+[dependencies]
+hmac = "0.12"
+jiff = "0.2.35"
+md-5 = "0.10"
+sha1 = "0.10"
+
+[profile.release]
+opt-level = 3
+
+[lib]
+name = "docsis"
+path = "src/lib.rs"
+
+# The binary is gen_docsis rather than docsis: it is installed beside the
+# provisioning server's own tools, where a name that generic invites the wrong
+# program being run. The library keeps the short name, having no such problem.
+[[bin]]
+name = "gen_docsis"
+path = "src/main.rs"
